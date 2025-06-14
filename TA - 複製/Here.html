@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>休閒風會計主畫面</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      font-family: "Segoe UI", sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 主頁面樣式 */
+    .home-page {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      background-image: url(img/22.jpg);
+      background-size: cover;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 30px;
+      color: #fefbe2;
+    }
+
+    .nav-button {
+      background-color: #6f91b8;
+      padding: 15px 25px;
+      font-size: 1.2em;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      transition: background-color 0.3s;
+      color: white;
+      margin: 10px;
+    }
+
+    .nav-button:hover {
+      background-color: #587ba3;
+    }
+
+    /* 返回按鈕樣式 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      font-size: 16px;
+      color: #333;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      transform: translateX(-5px);
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-button::before {
+      content: '🏠';
+      font-size: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .back-button:hover::before {
+      transform: translateX(-3px);
+    }
+
+    /* 對話框頁面樣式 */
+    .dialogue-page {
+      display: none;
+      height: 100vh;
+      background-image: url(img/paper.jpg);
+      position: relative;
+    }
+
+    .dialogue {
+      position: absolute;
+      width: 160px;
+      padding: 10px 15px;
+      background:#f2f2f2;
+      border-radius: 20px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      text-align: center;
+      user-select: none;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .dialogue.opened {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .dialogue::after {
+      position: absolute;
+      bottom: -10px;
+      left: 20px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: #fff7d1 transparent transparent transparent;
+    }
+
+    .message-box {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: white;
+      border: 2px solid #6f91b8;
+      border-radius: 15px;
+      padding: 15px 20px;
+      font-size: 16px;
+      color: #333;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 300px;
+      text-align: center;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .popup {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 80%;
+      text-align: center;
+      font-size: 20px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 2px solid #e0e0e0;
+    }
+
+    .popup-content {
+      position: relative;
+      padding: 20px;
+      margin: 10px 0;
+    }
+
+    .close-text {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 15px;
+      transition: background 0.3s;
+    }
+
+    .close-text:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    /* 旋轉木馬頁面樣式 */
+    .carousel-page {
+      display: none;
+      height: 100vh;
+      background-image: url(img/17.jpg);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .carousel {
+      width: 90%;
+      max-width: 800px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+
+    .slides {
+      display: flex;
+      width: 400%;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .slides img {
+      width: 25%;
+      height: 500px;
+      object-fit: cover;
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ccc;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .dot.active {
+      background: #6fb3b8;
+    }
+
+    .carousel-controls {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      padding: 0 20px;
+    }
+
+    .carousel-control {
+      background: rgba(255, 255, 255, 0.7);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+
+    .carousel-control:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* 筆記紙頁面樣式 */
+    .note-page {
+      display: none;
+      height: 100vh;
+      background: url('img/2.jpg') no-repeat center center fixed;
+      background-size: cover;
+      justify-content: center;
+      align-items: center;
+    }
+
+    textarea {
+      width: 80%;
+      max-width: 600px;
+      height: 70vh;
+      padding: 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.6);
+      outline: none;
+      resize: none;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- 主頁面 -->
+  <div class="home-page" id="homePage">
+    <div class="container">
+      <h1>For: 助教🪨<br>From: 稍差🐈</h1>
+      <button class="nav-button" onclick="showPage('dialoguePage')" title="點擊查看同學們的悄悄話">🗨️ 悄咪咪</button>
+      <button class="nav-button" onclick="showPage('carouselPage')" title="點擊欣賞助教的帥氣照片">📸 帥氣特寫</button>
+      <button class="nav-button" onclick="showPage('notePage')" title="點擊查看想對助教說的話">📝 嘰哩瓜拉</button>
+    </div>
+  </div>
+
+  <!-- 對話框頁面 -->
+  <div class="dialogue-page" id="dialoguePage">
+    <div class="back-button">返回</div>
+    <div id="overlay" class="overlay">
+      <div id="popup" class="popup"></div>
+    </div>
+    <div class="message-box">
+      雖然沒有129句話，但每一句都是真心的！(特別是SOS的部分XD)<br>☆點擊對話框看悄悄話☆
+    </div>
+  </div>
+
+  <!-- 旋轉木馬頁面 -->
+  <div class="carousel-page" id="carouselPage">
+    <div class="back-button">返回</div>
+    <div class="carousel">
+      <div class="carousel-controls">
+        
+      </div>
+      <div class="slides">
+        <img src="img/11.jpg" alt="照片1">
+        <img src="img/12.jpg" alt="照片2">
+        <img src="img/10.jpg" alt="照片3">
+        <img src="img/13.jpg" alt="照片4">
+      </div>
+    </div>
+    <div class="carousel-dots"></div>
+  </div>
+  
+
+  <!-- 筆記紙頁面 -->
+  <div class="note-page" id="notePage">
+    <div class="back-button">返回</div>
+    <textarea placeholder="寫下你想說的話... ✏️"></textarea>
+  </div>
+
+  <script>
+    // 對話框頁面初始化
+    function initDialoguePage() {
+      const phrases = [
+        {
+          text: '123',
+          link: 'carouselPage'
+        },
+        {
+          text: '456',
+          link: 'notePage'
+        },
+        '助教真的很親切但拜託別當我🙏',
+        '謝謝助教總是很耐心又即時的回覆問題，你是一個超讚ㄉ助教！🫶🏻助教加加加油～⭐️',
+        '請助教繼續出簡單的考題😍愛一輩子',
+        '謝謝玉舜跟助教那麼用心的教我們🥹🤍辛苦了！',
+        '很感謝助教小考真的很佛不然我這次期末失常一定被當（雖然我還不知道有沒有被當',
+        '㊗️㊗️國考順利‼️',
+        '泥好可愛',
+        '助教單身嗎',
+        '帥倒掉渣',
+        '助教很帥 教的超好 然後效率組真的要誇誇',
+      ];
+
+      const overlay = document.getElementById('overlay');
+      const popup = document.getElementById('popup');
+      const dialoguePage = document.getElementById('dialoguePage');
+
+      // 從 sessionStorage 獲取已讀狀態（關閉網頁後會清除）
+      const readStatus = JSON.parse(sessionStorage.getItem('readStatus') || '{}');
+
+      function createBubble(index, data) {
+        const el = document.createElement('div');
+        el.className = 'dialogue';
+        el.innerText = '...';
+
+        // 初始位置
+        let x = Math.random() * (window.innerWidth - 160);
+        let y = Math.random() * (window.innerHeight - 60);
+        
+        // 初始速度
+        let vx = (Math.random() - 0.5) * 2;
+        let vy = (Math.random() - 0.5) * 2;
+
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+
+        dialoguePage.appendChild(el);
+
+        // 檢查是否已讀
+        const bubbleId = typeof data === 'object' ? data.link : data;
+        if (readStatus[bubbleId]) {
+          el.innerText = '看過囉！';
+          el.classList.add('opened');
+        }
+
+        function float() {
+          // 更新位置
+          x += vx;
+          y += vy;
+
+          // 碰到邊界時反彈
+          if (x <= 0 || x >= window.innerWidth - 160) {
+            vx *= -1;
+            x = Math.max(0, Math.min(x, window.innerWidth - 160));
+          }
+          if (y <= 0 || y >= window.innerHeight - 60) {
+            vy *= -1;
+            y = Math.max(0, Math.min(y, window.innerHeight - 60));
+          }
+
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          requestAnimationFrame(float);
+        }
+        float();
+
+        let opened = false;
+        el.addEventListener('click', () => {
+          if (typeof data === 'object' && data.link) {
+            // 保存已讀狀態
+            readStatus[data.link] = true;
+            sessionStorage.setItem('readStatus', JSON.stringify(readStatus));
+            showPage(data.link);
+          } else {
+            popup.innerHTML = `<div class="popup-content">${typeof data === 'object' ? data.text : data}</div>`;
+            overlay.classList.add('active');
+            opened = true;
+            el.innerText = '看過囉！';
+            el.classList.add('opened');
+            // 保存已讀狀態
+            readStatus[bubbleId] = true;
+            sessionStorage.setItem('readStatus', JSON.stringify(readStatus));
+          }
+        });
+      }
+
+      overlay.addEventListener('click', () => {
+        overlay.classList.remove('active');
+      });
+
+      // 清除舊的對話框
+      const oldBubbles = dialoguePage.querySelectorAll('.dialogue');
+      oldBubbles.forEach(bubble => bubble.remove());
+
+      // 創建新的對話框
+      phrases.forEach((data, i) => createBubble(i, data));
+    }
+
+    // 旋轉木馬功能
+    let currentSlide = 0;
+    const slides = document.querySelector('.slides');
+    const dotsContainer = document.querySelector('.carousel-dots');
+    const totalSlides = document.querySelectorAll('.slides img').length;
+
+    function initCarousel() {
+      // 創建導航點點
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    function updateDots() {
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+    }
+
+    function goToSlide(n) {
+      currentSlide = n;
+      slides.style.transform = `translateX(-${currentSlide * 25}%)`;
+      updateDots();
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      goToSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      goToSlide(currentSlide);
+    }
+
+    // 自動播放
+    let slideInterval = setInterval(nextSlide, 5000);
+
+    // 當滑鼠懸停在輪播上時暫停自動播放
+    document.querySelector('.carousel').addEventListener('mouseenter', () => {
+      clearInterval(slideInterval);
+    });
+
+    document.querySelector('.carousel').addEventListener('mouseleave', () => {
+      slideInterval = setInterval(nextSlide, 5000);
+    });
+
+    // 筆記紙頁面初始化
+    function initNotePage() {
+      const textarea = document.querySelector('.note-page textarea');
+      
+      // 從 localStorage 讀取已保存的內容
+      const savedContent = localStorage.getItem('noteContent') || '';
+      textarea.value = savedContent;
+
+      // 當內容改變時保存
+      textarea.addEventListener('input', () => {
+        localStorage.setItem('noteContent', textarea.value);
+      });
+    }
+
+    // 頁面切換邏輯
+    function showPage(pageId) {
+      // 隱藏所有頁面
+      document.querySelectorAll('[class$="-page"]').forEach(page => {
+        page.style.display = 'none';
+      });
+      
+      // 顯示目標頁面
+      document.getElementById(pageId).style.display = 'flex';
+      
+      // 根據頁面類型初始化
+      if (pageId === 'dialoguePage') {
+        initDialoguePage();
+      } else if (pageId === 'notePage') {
+        initNotePage();
+      } else if (pageId === 'carouselPage') {
+        initCarousel();
+      }
+    }
+
+    // 返回按鈕邏輯
+    document.querySelectorAll('.back-button').forEach(button => {
+      button.addEventListener('click', () => {
+        showPage('homePage');
+      });
+    });
+
+    // 初始化顯示主頁面
+    showPage('homePage');
+  </script>
+</body>
+</html> 
